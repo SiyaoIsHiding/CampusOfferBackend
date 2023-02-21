@@ -40,7 +40,6 @@ router.get("/product", (req, res,next ) => {
   //GetProductByID
   //Return product with the specific ID
   try{
-    //const conn = await connectToDatabase();
     const productID = req.query.id;
     
     dbWorker.getProductByID(productID, (product) => {
@@ -48,32 +47,6 @@ router.get("/product", (req, res,next ) => {
       res.send(product);
     });
     
-
-    //sql = "SELECT * FROM products"
-    /*
-    conn.query(sql, await function (err, result) {
-      if (err) throw err;
-      console.log("Result: " + result[0]);
-    });
-    */
-    //const productID = req.query.id;
-    /*
-    res.status(200).json(
-      {
-        "id": "de066979-f4a9-470e-91dd-04e854626e67",
-        "category_id": "50078c52-f315-46c4-9b14-f3c3f7656f63",
-        "seller_id": "ce2d1cb1-af79-4d72-ac33-1b56c14f769e",
-        "description": "A fully working chair. Bought in March last year.",
-        "is_sold": false,
-        "title": "An office chair at Verano Place",
-        "create_date": "2022-12-31 11:59:59",
-        "_images": [
-          "24e3ef46-3fb0-40d8-b163-402b2d96d9bf",
-          "642097f4-9f4e-44c4-a3d1-79865d109b8d"
-        ]
-      }
-    );
-    */
   } catch (err) {
     next(err);
   }

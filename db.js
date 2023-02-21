@@ -1,15 +1,23 @@
 var mysql = require('mysql');
 var fs = require('fs')
 
-async function connectToDatabase() {
-    var conn = await mysql.createConnection({host:"janedatabase.mysql.database.azure.com", 
-        user:"CampusOfferAdmin", 
-        password:"DannyJaneSoniaStella2023", 
-        database:"JANEDB", 
-        port:3306, ssl:{ca:fs.readFileSync("DigiCertGlobalRootCA.crt.pem")}
+var conn = mysql.createConnection({host:"janedatabase.mysql.database.azure.com", 
+    user:"CampusOfferAdmin", 
+    password:"DannyJaneSoniaStella2023", 
+    database:"JANEDB", 
+    port:3306, ssl:{ca:fs.readFileSync("DigiCertGlobalRootCA.crt.pem")}
+});
+
+
+let dbWorker = {};
+
+dbWorker.getProductByID = (productID, callback) => {
+    sql = "SELECT * FROM products WHERE id = ?";
+    console.log(productID);
+    conn.query(sql, [productID], function (err, result) {
+        if (err) throw err;
+        callback(result[0]);
     });
-
-    return conn;
 }
+module.exports = dbWorker;
 
-module.exports = { connectToDatabase };

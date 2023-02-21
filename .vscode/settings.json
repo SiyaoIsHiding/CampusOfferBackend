@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "-ecf3-406c-9f62-513e2ec45e4b/AppServices/subscriptions/8334eb47-ecf3-406c-9f62-513e2ec45e4b/resourceGroups/CampusOffer/providers/Microsoft.Web/sites/CampusOffer",
+    "appService.deploySubpath": "."
+}

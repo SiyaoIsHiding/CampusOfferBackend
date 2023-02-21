@@ -19,23 +19,24 @@ dbWorker.getProductByID = (productID, callback) => {
         callback(result[0]);
     });
 }
+
+
+dbWorker.getUserByID = (usrID, callback) => {
+    sql = "SELECT * FROM uci_usr WHERE id = ?";
+    console.log(usrID);
+    conn.query(sql, [usrID], function (err, result) {
+        if (err) throw err;
+        callback(result[0]);
+    });
+}
+
+dbWorker.getCategoryByID = (categoryID, callback) => {
+    sql = "SELECT * FROM product_category WHERE id = ?";
+    console.log(categoryID);
+    conn.query(sql, [categoryID], function (err, result) {
+        if (err) throw err;
+        callback(result[0]);
+    });
+}
+
 module.exports = dbWorker;
-
-
-dbWorker.getUserByID = (usrID, callback) => {
-    sql = "SELECT * FROM uci_usr WHERE id = ?";
-    console.log(usrID);
-    conn.query(sql, [usrID], function (err, result) {
-        if (err) throw err;
-        callback(result[0]);
-    });
-}
-
-dbWorker.getUserByID = (usrID, callback) => {
-    sql = "SELECT * FROM uci_usr WHERE id = ?";
-    console.log(usrID);
-    conn.query(sql, [usrID], function (err, result) {
-        if (err) throw err;
-        callback(result[0]);
-    });
-}

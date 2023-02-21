@@ -19,8 +19,6 @@ router.post("/products", async (req, res, next) => {
   //PostProduct
   //Post product with the specific ID
   try{
-    const conn = await connectToDatabase();
-
     let {category_id, seller_id, description, title, _image_num, price} = req.body;
     let id = uuidv4();
     let is_sold = false;
@@ -36,20 +34,16 @@ router.post("/products", async (req, res, next) => {
   }
 });
 
+//COMPLETE
 router.get("/product", (req, res,next ) => {
   //GetProductByID
   //Return product with the specific ID
-  try{
-    const productID = req.query.id;
+  const productID = req.query.id;
+  dbWorker.getProductByID(productID, (product) => {
+    console.log(product);
+    res.send(product);
+  });
     
-    dbWorker.getProductByID(productID, (product) => {
-      console.log(product);
-      res.send(product);
-    });
-    
-  } catch (err) {
-    next(err);
-  }
 });
 
 router.get("/category", async (req, res, next) => {
@@ -69,12 +63,6 @@ router.get("/category", async (req, res, next) => {
       next(err);
   }
   
-/*
-  res.status(200).json({
-    "id": "41859207-5471-4223-b01c-e566d506c799",
-    "name": "furniture"
-  });
-  */
 });
 
 router.get("/subcategory", async (req, res, next) => {
@@ -97,19 +85,16 @@ router.get("/subcategory", async (req, res, next) => {
   );
 });
 
-router.get("/usr", async (req, res, next) => {
+//COMPLETE
+router.get("/usr", (req, res, next) => {
   //GetUserByID
   //Return user given specific id
-    const userID = req.query.id;
-    res.status(200).json(
-      {
-        "id":"4a716403-ffc5-4c16-b880-310c3e85b7ee",
-        "uci_netid":"siyaoh4",
-        "first_name":"jane",
-        "last_name":"he",
-        "bio":"Living in Verano Place. Gonna leave here soon so contact me via siyaoh4@uci.edu for some cheap furniture."
-      }
-    );
+  const userID = req.query.id;
+  dbWorker.getUserByID(userID, (user) => {
+    console.log(user);
+    res.send(user);
+  });
+    
 });
 
 router.get("/products", async (req, res, next) => {

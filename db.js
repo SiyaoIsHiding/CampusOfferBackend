@@ -39,4 +39,22 @@ dbWorker.getCategoryByID = (categoryID, callback) => {
     });
 }
 
+dbWorker.getSubCategory = (parentID, callback) => {
+    sql = "SELECT * FROM product_category WHERE parent_id = ?";
+    console.log(parentID);
+    conn.query(sql, [parentID], function (err, result) {
+        if (err) throw err;
+        callback(result[0]);
+    });
+}
+
+
+dbWorker.productsUnderCategory = (categoryID, callback) => {
+    sql = "SELECT * FROM products WHERE category_id = ?";
+    console.log(categoryID);
+    conn.query(sql, [categoryID], function (err, result) {
+        if (err) throw err;
+        callback(result[0]);
+    });
+}
 module.exports = dbWorker;

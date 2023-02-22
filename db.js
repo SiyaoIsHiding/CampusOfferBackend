@@ -54,7 +54,7 @@ dbWorker.getSubCategory = (parentID, callback) => {
 }
 
 
-dbWorker.getProductByCategory = (categoryID, callback) => {
+dbWorker.getProductUnderCategory = (categoryID, callback) => {
     sql = "SELECT * FROM products WHERE category_id IN (" +
             "SELECT * FROM product_category WHERE parent_id = ?" +
             "UNION" +

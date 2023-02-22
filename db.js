@@ -42,12 +42,13 @@ dbWorker.getCategoryByID = (categoryID, callback) => {
 dbWorker.getSubCategory = (parentID, callback) => {
     sql = "SELECT * FROM product_category WHERE parent_id = ?" +
             " UNION" +
-            " SELECT pc. * FROM product_category pc" +
+            " SELECT pc.* FROM product_category pc" +
             " JOIN (" + 
                 " SELECT id FROM product_category"+
-                " WHERE parent_id = ?) t ON pc.parent_id = t.id";
+                " WHERE parent_id = ?" + 
+                " ) t ON pc.parent_id = t.id";
     console.log(parentID);
-    conn.query(sql, [parentID], function (err, result) {
+    conn.query(sql, [parentID, parentID], function (err, result) {
         if (err) throw err;
         callback(result[0]);
     });
@@ -63,11 +64,10 @@ dbWorker.getProductUnderCategory = (categoryID, callback) => {
                 "SELECT id FROM product_category"+
                 "WHERE parent_id = ?) t ON pc.parent_id = t.id";
     console.log(categoryID);
-    conn.query(sql, [categoryID], function (err, result) {
+    conn.query(sql, [categoryID, categoryID], function (err, result) {
         if (err) throw err;
         callback(result[0]);
     });
 }
-
 
 module.exports = dbWorker;

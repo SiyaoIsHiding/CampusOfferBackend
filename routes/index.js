@@ -49,40 +49,21 @@ router.get("/product", (req, res,next ) => {
 router.get("/category", async (req, res, next) => {
   //GetCategoryByID
   //Return specific category given id
-  try{
-    const conn = await connectToDatabase();
-
-    const categoryID = req.query.id;
-    sql = "SELECT id, name FROM product_catergory WHERE id = (categoryID) VALUES(?)";
-    conn.query(sql, [categoryID], await function (err, result) {
-      if (err) throw err;
-      console.log("Result: " + result[0]);
-    });
-    res.status(200).send(result[0]);
-  } catch (err) {
-      next(err);
-  }
-  
+  const categoryID = req.query.id;
+  dbWorker.getCategoryByID(categoryID, (category) => {
+    console.log(category);
+    res.send(category);
+  });
 });
 
 router.get("/subcategory", async (req, res, next) => {
   //GetSubCategory
   //Return all categories under given id
   const subcategoryID = req.query.id;
-  res.status(200).json(
-    {
-      "subcategory":[
-          {
-              "id":"41859207-5471-4223-b01c-e566d506c799",
-              "name":"furniture"
-          },
-          {
-              "id":"32049c06-8a4c-45ea-84a1-492c11f401be",
-              "name":"game consoles"
-          }
-      ]
-    }
-  );
+  dbWorker.getSubCategory(subcategoryID, (categories) => {
+    console.log(categories);
+    res.send(categories);
+  });
 });
 
 //COMPLETE
@@ -101,15 +82,10 @@ router.get("/products", async (req, res, next) => {
   //ProductsUnderCategory
   //Return all products under this category id
   const categoryID = req.query.category_id;
-  res.status(200).json(
-    {
-      "product_id":[
-          "70464662-4f1d-4ff2-ba96-ccb47cde3a3c",
-          "ea876059-c168-4892-b874-2253e28ecd75",
-          "13c2dbd0-c6bd-4d19-a2ef-36a6f4c6d866"
-      ]
-    }
-  );
+  dbWorker.getProductUnderCategory(categoryID, (products) => {
+    console.log(products);
+    res.send(products);
+  });
 });
 
 router.get("/saved_products", async (req, res, next) => {

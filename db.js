@@ -69,4 +69,22 @@ dbWorker.getProductUnderCategory = (categoryID, callback) => {
     });
 }
 
+dbWorker.getSavedProducts = (usr_id, callback) => {
+    sql = "SELECT product_id FROM saved_products WHERE usr_id = ?";
+    console.log(usr_id);
+    conn.query(sql, [usr_id], function (err, result) {
+        if (err) throw err;
+        callback(result);
+    });
+}
+
+dbWorker.getProductByUser = (usr_id, callback) => {
+    sql = "SELECT id FROM products WHERE seller_id = ?";
+    console.log(usr_id);
+    conn.query(sql, [usr_id], function (err, result) {
+        if (err) throw err;
+        callback(result);
+    });
+}
+
 module.exports = dbWorker;

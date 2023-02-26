@@ -102,11 +102,13 @@ dbWorker.getImageByID = (image_id, callback) => {
     }
 }
 
-// postProduct: create one product and five empty images
+// postProduct: create one product and two empty images
 dbWorker.postProduct = (category_id, seller_id, description, title, price, callback) => {
     sql = "INSERT INTO products (id, category_id, seller_id, description, is_sold, title, created_date, price) " + 
-            "VALUES(UUID(),?,?,?,default,?,default,?)";
-    conn.query(sql, [category_id, seller_id, description, title, price], function (err, result) {
+            "VALUES(UUID(),?,?,?,default,?,default,?); " + 
+            "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
+            "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);";
+    conn.query(sql, [category_id, seller_id, description, title, price, seller_id, seller_id], function (err, result) {
       if (err) throw err;
         callback(result);
     });

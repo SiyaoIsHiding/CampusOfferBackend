@@ -20,11 +20,14 @@ router.post("/products", async (req, res, next) => {
   //Post product with the specific ID
   try{
     let {category_id, seller_id, description, title, _image_num, price} = req.body;
-    let id = uuidv4();
+    for (let i = 0; i < _image_num ; i++) {
+      let id = uuidv4();
+    }
+    let productID = uuidv4();
     let is_sold = false;
     let currDate = Date();
     sql = "INSERT INTO products (id, category_id, seller_id, description, is_sold, title, created_date, price) VALUES(?,?,?,?,?,?,NOW(),?)";
-    conn.query(sql, [id, category_id, seller_id, description, is_sold, title, price], await function (err, result) {
+    conn.query(sql, [productID, category_id, seller_id, description, is_sold, title, price], await function (err, result) {
       if (err) throw err;
       console.log("Result: " + result[0]);
     });
@@ -41,28 +44,30 @@ router.get("/product", (req, res,next ) => {
   const productID = req.query.id;
   dbWorker.getProductByID(productID, (product) => {
     console.log(product);
-    res.send(product);
+    res.status(200).send(product);
   });
     
 });
 
+//COMPLETE
 router.get("/category", async (req, res, next) => {
   //GetCategoryByID
   //Return specific category given id
   const categoryID = req.query.id;
   dbWorker.getCategoryByID(categoryID, (category) => {
     console.log(category);
-    res.send(category);
+    res.status(200).send(category);
   });
 });
 
+//COMPLETE
 router.get("/subcategory", async (req, res, next) => {
   //GetSubCategory
   //Return all categories under given id
   const subcategoryID = req.query.id;
   dbWorker.getSubCategory(subcategoryID, (categories) => {
     console.log(categories);
-    res.send(categories);
+    res.status(200).send({"subcategory":categories});
   });
 });
 
@@ -73,18 +78,19 @@ router.get("/usr", (req, res, next) => {
   const userID = req.query.id;
   dbWorker.getUserByID(userID, (user) => {
     console.log(user);
-    res.send(user);
+    res.status(200).send(user);
   });
     
 });
 
+//COMPLETE
 router.get("/products", async (req, res, next) => {
   //ProductsUnderCategory
   //Return all products under this category id
   const categoryID = req.query.category_id;
   dbWorker.getProductUnderCategory(categoryID, (products) => {
     console.log(products);
-    res.send(products);
+    res.status(200).send({"product_id":products});
   });
 });
 

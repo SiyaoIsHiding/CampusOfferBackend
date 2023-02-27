@@ -65,7 +65,7 @@ dbWorker.getProductUnderCategory = (categoryID, callback) => {
     console.log(categoryID);
     conn.query(sql, [categoryID, categoryID], function (err, result) {
         if (err) throw err;
-        callback(result[0]);
+        callback(result);
     });
 }
 

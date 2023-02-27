@@ -65,7 +65,7 @@ dbWorker.getProductUnderCategory = (categoryID, callback) => {
     console.log(categoryID);
     conn.query(sql, [categoryID, categoryID], function (err, result) {
         if (err) throw err;
-        callback(result);
+        callback(result[0]);
     });
 }
 
@@ -105,7 +105,19 @@ dbWorker.getImageByID = (image_id, callback) => {
 // postProduct: create one product and two empty images
 dbWorker.postProduct = (category_id, seller_id, description, title, price, callback) => {
     sql = "INSERT INTO products (id, category_id, seller_id, description, is_sold, title, created_date, price) " + 
-            "VALUES(UUID(),?,?,?,default,?,default,?); " + 
+          "VALUES(UUID(),?,?,?,default,?,default,?); " + 
+          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
+          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);";
+    conn.query(sql, [category_id, seller_id, description, title, price, seller_id, seller_id], function (err, result) {
+      if (err) throw err;
+        callback(result);
+    });
+}
+
+// upLoadImage: Update image content
+dbWorker.upLoadImage = (seller_id, blob, callback) => {
+    sql = "UPDATE images " + 
+          "SET content = (UUID(),?,?,?,default,?,default,?); " + 
             "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
             "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);";
     conn.query(sql, [category_id, seller_id, description, title, price, seller_id, seller_id], function (err, result) {
@@ -113,4 +125,5 @@ dbWorker.postProduct = (category_id, seller_id, description, title, price, callb
         callback(result);
     });
 }
+
 module.exports = dbWorker;

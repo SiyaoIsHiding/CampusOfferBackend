@@ -11,6 +11,7 @@ var conn = mysql.createConnection({host:"janedatabase.mysql.database.azure.com",
 
 let dbWorker = {};
 
+// get product by ID
 dbWorker.getProductByID = (productID, callback) => {
     sql = "SELECT * FROM products WHERE id = ?";
     console.log(productID);
@@ -20,7 +21,7 @@ dbWorker.getProductByID = (productID, callback) => {
     });
 }
 
-
+// get user by ID
 dbWorker.getUserByID = (usrID, callback) => {
     sql = "SELECT * FROM uci_usr WHERE id = ?";
     console.log(usrID);
@@ -30,6 +31,7 @@ dbWorker.getUserByID = (usrID, callback) => {
     });
 }
 
+// get Category by ID
 dbWorker.getCategoryByID = (categoryID, callback) => {
     sql = "SELECT * FROM product_category WHERE id = ?";
     console.log(categoryID);
@@ -39,14 +41,16 @@ dbWorker.getCategoryByID = (categoryID, callback) => {
     });
 }
 
+// get sub-category by its parent ID
 dbWorker.getSubCategory = (parentID, callback) => {
-    sql = "SELECT * FROM product_category WHERE parent_id = ?" +
-            " UNION" +
-            " SELECT pc.* FROM product_category pc" +
-            " JOIN (" + 
-                " SELECT id FROM product_category"+
-                " WHERE parent_id = ?" + 
-                " ) t ON pc.parent_id = t.id";
+    sql = "SELECT id, name FROM product_category WHERE parent_id = ? " +
+            "AND id not in ('00000000-0000-0000-0000-00000000000') " +
+            "UNION " +
+            "SELECT pc.id, pc.name FROM product_category pc " +
+            "JOIN (" + 
+                "SELECT id FROM product_category WHERE parent_id = ? " + 
+                "AND id not in ('00000000-0000-0000-0000-00000000000') " +
+                ") t ON pc.parent_id = t.id";
     console.log(parentID);
     conn.query(sql, [parentID, parentID], function (err, result) {
         if (err) throw err;
@@ -54,9 +58,9 @@ dbWorker.getSubCategory = (parentID, callback) => {
     });
 }
 
-
+// get products under a category ID as deep as its two layer sub-categories
 dbWorker.getProductUnderCategory = (categoryID, callback) => {
-    sql = "SELECT * FROM products WHERE category_id IN (" +
+    sql = "SELECT id FROM products WHERE category_id IN (" +
             "SELECT id FROM product_category WHERE parent_id = ?" +
             " UNION" +
             " SELECT pc.id FROM product_category pc" +
@@ -69,6 +73,7 @@ dbWorker.getProductUnderCategory = (categoryID, callback) => {
     });
 }
 
+// get saved products by user ID who saved it
 dbWorker.getSavedProducts = (usr_id, callback) => {
     sql = "SELECT product_id FROM saved_products WHERE usr_id = ?";
     console.log(usr_id);
@@ -83,6 +88,50 @@ dbWorker.getProductByUser = (usr_id, callback) => {
     console.log(usr_id);
     conn.query(sql, [usr_id], function (err, result) {
         if (err) throw err;
+        callback(result);
+    });
+}
+
+// get a image by its ID
+dbWorker.getImageByID = (image_id, callback) => {
+    sql = "SELECT content FROM images WHERE id = ?";
+    console.log(image_id);
+    conn.query(sql, [image_id], function (err, blob) {
+        if (err) throw err;
+        callback(blob);
+    });
+    var reader = new FileReader();
+    reader.readAsDataURL(blob); 
+    reader.onloadend = function() {
+        var base64data = reader.result;                
+        console.log(base64data);
+    }
+}
+
+// postProduct: create one product and five empty images
+// create image id and its product_id leave content as null
+dbWorker.postProduct = (category_id, seller_id, description, title, price, callback) => {
+    sql = "INSERT INTO products (id, category_id, seller_id, description, is_sold, title, created_date, price) " + 
+          "VALUES(UUID(),?,?,?,default,?,default,?); " + 
+          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
+          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
+          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
+          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
+          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);";
+    conn.query(sql, [category_id, seller_id, description, title, price, seller_id, seller_id], function (err, result) {
+      if (err) throw err;
+        callback(result);
+    });
+}
+
+// upLoadImage: Update image content
+dbWorker.upLoadImage = (image_id, blob, callback) => {
+    sql = "UPDATE images " + 
+          "SET content = (?,?,?,?,default,?,default,?); " + 
+            "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
+            "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);";
+    conn.query(sql, [category_id, seller_id, description, title, price, seller_id, seller_id], function (err, result) {
+      if (err) throw err;
         callback(result);
     });
 }

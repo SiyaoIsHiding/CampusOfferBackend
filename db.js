@@ -83,6 +83,7 @@ dbWorker.getSavedProducts = (usr_id, callback) => {
     });
 }
 
+// get all products posted by a user with user ID
 dbWorker.getProductByUser = (usr_id, callback) => {
     sql = "SELECT id FROM products WHERE seller_id = ?";
     console.log(usr_id);
@@ -109,28 +110,36 @@ dbWorker.getImageByID = (image_id, callback) => {
 }
 
 // postProduct: create one product and five empty images
-// create image id and its product_id leave content as null
-dbWorker.postProduct = (category_id, seller_id, description, title, price, callback) => {
+// create image id and its product_id leave content as null in DB
+// Only the product uuid is passed from server
+dbWorker.postProduct = (id, category_id, seller_id, description, title, price, callback) => {
     sql = "INSERT INTO products (id, category_id, seller_id, description, is_sold, title, created_date, price) " + 
-          "VALUES(UUID(),?,?,?,default,?,default,?); " + 
+          "VALUES(?,?,?,?,default,?,default,?); " + 
           "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
           "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
           "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
           "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
-          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);";
-    conn.query(sql, [category_id, seller_id, description, title, price, seller_id, seller_id], function (err, result) {
+          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" +
+          "SELECT id FROM images WHERE product_id = ?";
+    conn.query(sql, [id, category_id, seller_id, description, title, price, seller_id, seller_id, id], function (err, result) {
       if (err) throw err;
         callback(result);
     });
 }
 
-// upLoadImage: Update image content
+// upLoadImage: Update one image content with its image ID
 dbWorker.upLoadImage = (image_id, blob, callback) => {
-    sql = "UPDATE images " + 
-          "SET content = (?,?,?,?,default,?,default,?); " + 
-            "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
-            "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);";
-    conn.query(sql, [category_id, seller_id, description, title, price, seller_id, seller_id], function (err, result) {
+    sql = "UPDATE images SET content = (?) WHERE id = ? ";
+    conn.query(sql, [blob, image_id], function (err, result) {
+      if (err) throw err;
+        callback(result);
+    });
+}
+
+// MarkSold: Mark a product as sold
+dbWorker.MarkSold = (product_id, callback) => {
+    sql = "UPDATE products SET is_sold = 1 WHERE id = ? ";
+    conn.query(sql, [product_id], function (err, result) {
       if (err) throw err;
         callback(result);
     });

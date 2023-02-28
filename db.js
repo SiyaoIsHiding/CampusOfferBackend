@@ -117,7 +117,7 @@ dbWorker.postProduct = (called_image_num, id, category_id, seller_id, descriptio
            "VALUES(?,?,?,?,default,?,default,?); "
     const questionMarks = [id, category_id, seller_id, description, title, price];
     for (let i=1; i <= called_image_num; i++){
-        sql = sql  + "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);"
+        sql = sql  + "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" ;
         questionMarks.push(seller_id);
     }
     sql = sql + "SELECT id FROM images WHERE product_id = ?";

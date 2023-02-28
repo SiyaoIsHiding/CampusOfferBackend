@@ -29,7 +29,7 @@ router.post("/products", async (req, res, next) => {
         let id = images[i]["id"];
         result.push(id);
       };
-      res.status(201).send({"_images_":results});
+      res.status(201).send({"_images":result});
     });
   
   } catch (err) {

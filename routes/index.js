@@ -18,6 +18,8 @@ router.get('/', function(req, res, next) {
 router.post("/products", async (req, res, next) => {
   //PostProduct
   //Post product with the specific ID
+
+  //pass to db item information and number of images
   try{
     let {category_id, seller_id, description, title, _image_num, price} = req.body;
     for (let i = 0; i < _image_num ; i++) {
@@ -50,7 +52,7 @@ router.get("/product", (req, res,next ) => {
 });
 
 //COMPLETE
-router.get("/category", async (req, res, next) => {
+router.get("/category", (req, res, next) => {
   //GetCategoryByID
   //Return specific category given id
   const categoryID = req.query.id;
@@ -61,7 +63,7 @@ router.get("/category", async (req, res, next) => {
 });
 
 //COMPLETE
-router.get("/subcategory", async (req, res, next) => {
+router.get("/subcategory", (req, res, next) => {
   //GetSubCategory
   //Return all categories under given id
   const subcategoryID = req.query.id;
@@ -84,32 +86,57 @@ router.get("/usr", (req, res, next) => {
 });
 
 //COMPLETE
-router.get("/products", async (req, res, next) => {
+router.get("/products", (req, res, next) => {
   //ProductsUnderCategory
   //Return all products under this category id
+
   const categoryID = req.query.category_id;
-  dbWorker.getProductUnderCategory(categoryID, (products) => {
-    console.log(products);
-    let result = [];
-    for(let i = 0; i < products.length; i++){
-      let id = products[i]["id"];
-      result.push(id);
-    };
-    res.status(200).send({"product_id":result});
-  });
+
+  if(categoryID != null){
+
+    dbWorker.getProductUnderCategory(categoryID, (products) => {
+      console.log(products);
+      let result = [];
+      for(let i = 0; i < products.length; i++){
+        let id = products[i]["id"];
+        result.push(id);
+      };
+      res.status(200).send({"product_id":result});
+    });
+  } else {
+
+    //GetProductByUser
+    //Returns all product under a specific user id
+
+    const userID = req.query.user_id;
+    console.log(userID);
+    dbWorker.getProductByUser(userID, (products) => {
+      console.log(products);
+      let result = [];
+      for(let i = 0; i < products.length; i++){
+        let id = products[i]["id"];
+        result.push(id);
+      };
+      res.status(200).send({"product_id":result});
+    });
+  }
+
 });
 
-router.get("/saved_products", async (req, res, next) => {
+//COMPLETE
+router.get("/saved_products", (req, res, next) => {
   //GetSavedProducts
   //Return the save products this user has saved
   const usrID = req.query.usr_id;
-  res.status(200).json(
-    {
-      "saved_products": [
-          "92c6ebb6-b0ca-11ed-a0a9-00224829ee55"
-      ]
-    }
-  );
+  dbWorker.getSavedProducts(usrID, (products) => {
+    console.log(products);
+    let result = [];
+    for(let i = 0; i < products.length; i++){
+      let id = products[i]["product_id"];
+      result.push(id);
+    };
+    res.status(200).send({"saved_products":result});
+  });
 });
 
 router.put("/images/:image_id", async (req, res, next) => {
@@ -119,11 +146,15 @@ router.put("/images/:image_id", async (req, res, next) => {
   res.status(200);
 });
 
+//COMPLETE
 router.patch("/products/:id", async (req, res, next) => {
   //MarkSold
   //Mark product as sold
   const productID = req.params.id;
-  res.status(200);
+  dbWorker.getSavedProducts(productID, (result) => {
+    console.log(result);
+    res.status(200);
+  });
 });
 
 router.get("/images/:image_id", async (req, res, next) => {
@@ -132,21 +163,5 @@ router.get("/images/:image_id", async (req, res, next) => {
   const imageID = req.params.image_id;
   res.status(200);
 });
-
-router.get("/products", async (req, res, next) => {
-  //GetProductByUser
-  //Returns all product under a specific user id
-  const userID = req.query.user_id;
-  res.status(200).json(
-    {
-      "product_id": [
-          "70464662-4f1d-4ff2-ba96-ccb47cde3a3c",
-          "ea876059-c168-4892-b874-2253e28ecd75",
-          "13c2dbd0-c6bd-4d19-a2ef-36a6f4c6d866"
-      ]
-    }
-  );
-});
-
 
 module.exports = router;

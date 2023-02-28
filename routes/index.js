@@ -90,7 +90,12 @@ router.get("/products", async (req, res, next) => {
   const categoryID = req.query.category_id;
   dbWorker.getProductUnderCategory(categoryID, (products) => {
     console.log(products);
-    res.status(200).send({"product_id":products});
+    let result = [];
+    for(let i = 0; i < products.length; i++){
+      let id = products[i]["id"];
+      result.push(id);
+    };
+    res.status(200).send({"product_id":result});
   });
 });
 

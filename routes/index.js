@@ -15,26 +15,23 @@ router.get('/', function(req, res, next) {
 /*
 *  endpoints
 */
-router.post("/products", async (req, res, next) => {
+//COMPLETE
+router.post("/products", (req, res, next) => {
   //PostProduct
   //Post product with the specific ID
 
-  try{
-    let {category_id, seller_id, description, title, _image_num, price} = req.body;
-    let productID = uuidv4();
-    dbWorker.postProduct(_image_num, productID, category_id, seller_id, description, title, price, (images) => {
-      console.log(images);
-      let result = [];
-      for(let i = 0; i < images.length; i++){
-        let id = images[i]["id"];
-        result.push(id);
-      };
-      res.status(201).send({"_images":result});
-    });
-  
-  } catch (err) {
-    next(err);
-  }
+  let {category_id, seller_id, description, title, _image_num, price} = req.body;
+  let productID = uuidv4();
+  dbWorker.postProduct(_image_num, productID, category_id, seller_id, description, title, price, (multiQueryRes) => {
+    console.log(multiQueryRes);
+    let images = multiQueryRes.pop();
+    let result = [];
+    for(let i = 0; i < images.length; i++){
+      let id = images[i]["id"];
+      result.push(id);
+    };
+    res.status(201).send({"_images":result});
+  });
 });
 
 //COMPLETE
@@ -163,7 +160,10 @@ router.get("/images/:image_id", async (req, res, next) => {
   //GetImageByID
   //Returns image by id
   const imageID = req.params.image_id;
-  res.status(200);
+  dbWorker.getUserByID(productID, (image) => {
+    //console.log(image);
+    res.status(200).send(image);
+  });
 });
 
 module.exports = router;

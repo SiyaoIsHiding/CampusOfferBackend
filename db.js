@@ -116,11 +116,11 @@ dbWorker.getImageByID = (image_id, callback) => {
 // postProduct: create one product and five empty images
 // create image id and its product_id leave content as null in DB
 // Only the product uuid is passed from server
-dbWorker.postProduct = (called_image_num, product_id, category_id, seller_id, description, title, price, callback) => {
+dbWorker.postProduct = (_image_num, product_id, category_id, seller_id, description, title, price, callback) => {
     sql = "INSERT INTO products (id, category_id, seller_id, description, is_sold, title, created_date, price) " + 
            "VALUES(?,?,?,?,default,?,default,?); "
     const questionMarks = [product_id, category_id, seller_id, description, title, price];
-    for (let i=1; i <= called_image_num; i++){
+    for (let i=1; i <= _image_num; i++){
         sql = sql  + "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" ;
         questionMarks.push(product_id); 
     }

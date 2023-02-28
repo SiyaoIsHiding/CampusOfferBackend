@@ -112,16 +112,17 @@ dbWorker.getImageByID = (image_id, callback) => {
 // postProduct: create one product and five empty images
 // create image id and its product_id leave content as null in DB
 // Only the product uuid is passed from server
-dbWorker.postProduct = (id, category_id, seller_id, description, title, price, callback) => {
+dbWorker.postProduct = (called_image_num, id, category_id, seller_id, description, title, price, callback) => {
     sql = "INSERT INTO products (id, category_id, seller_id, description, is_sold, title, created_date, price) " + 
-          "VALUES(?,?,?,?,default,?,default,?); " + 
-          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
-          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
-          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
-          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" + 
-          "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);" +
-          "SELECT id FROM images WHERE product_id = ?";
-    conn.query(sql, [id, category_id, seller_id, description, title, price, seller_id, seller_id, id], function (err, result) {
+           "VALUES(?,?,?,?,default,?,default,?); "
+    const questionMarks = [id, category_id, seller_id, description, title, price];
+    for (let i=1; i <= called_image_num; i++){
+        sql = sql  + "INSERT INTO images (id, product_id, content) VALUES (UUID(), ?, default);"
+        qestionMarks.push(seller_id);
+    }
+    sql = sql + "SELECT id FROM images WHERE product_id = ?";
+    questionMarks.push(id);
+    conn.query(sql, qestionMarks, function (err, result) {
       if (err) throw err;
         callback(result);
     });

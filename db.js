@@ -1,12 +1,16 @@
 var mysql = require('mysql');
 var fs = require('fs')
 
-var conn = mysql.createConnection({host:"janedatabase.mysql.database.azure.com", 
+var conn = mysql.createConnection({
+    host:"janedatabase.mysql.database.azure.com", 
     user:"CampusOfferAdmin", 
     password:"DannyJaneSoniaStella2023", 
     database:"JANEDB", 
-    port:3306, ssl:{ca:fs.readFileSync("DigiCertGlobalRootCA.crt.pem")}
-});
+    port:3306, ssl:{ca:fs.readFileSync("DigiCertGlobalRootCA.crt.pem")},
+    multipleStatements: true  // allow multiple sql queries, it's false by default for security
+}
+    // {multipleStatements: true} // this is the wrong format to config
+);
 
 
 let dbWorker = {};

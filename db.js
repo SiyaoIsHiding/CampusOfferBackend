@@ -122,7 +122,7 @@ dbWorker.postProduct = (called_image_num, id, category_id, seller_id, descriptio
     }
     sql = sql + "SELECT id FROM images WHERE product_id = ?";
     questionMarks.push(id);
-    conn.query(sql, qestionMarks, function (err, result) {
+    conn.query(sql, questionMarks, function (err, result) {
       if (err) throw err;
         callback(result);
     });

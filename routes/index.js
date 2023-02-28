@@ -19,21 +19,19 @@ router.post("/products", async (req, res, next) => {
   //PostProduct
   //Post product with the specific ID
 
-  //pass to db item information and number of images
   try{
     let {category_id, seller_id, description, title, _image_num, price} = req.body;
-    for (let i = 0; i < _image_num ; i++) {
-      let id = uuidv4();
-    }
     let productID = uuidv4();
-    let is_sold = false;
-    let currDate = Date();
-    sql = "INSERT INTO products (id, category_id, seller_id, description, is_sold, title, created_date, price) VALUES(?,?,?,?,?,?,NOW(),?)";
-    conn.query(sql, [productID, category_id, seller_id, description, is_sold, title, price], await function (err, result) {
-      if (err) throw err;
-      console.log("Result: " + result[0]);
+    dbWorker.postProduct(_image_num, productID, category_id, seller_id, description, title, price, (images) => {
+      console.log(images);
+      let result = [];
+      for(let i = 0; i < images.length; i++){
+        let id = images[i]["id"];
+        result.push(id);
+      };
+      res.status(201).send({"_images_":results});
     });
-    res.status(201).send("completed");
+  
   } catch (err) {
     next(err);
   }
@@ -139,15 +137,19 @@ router.get("/saved_products", (req, res, next) => {
   });
 });
 
-router.put("/images/:image_id", async (req, res, next) => {
+router.put("/images/:image_id", (req, res, next) => {
   //UploadImage
   //Upload image with id
   const imageID = req.params.image_id;
-  res.status(200);
+  const imageBody = req.body;
+  dbWorker.upLoadImage(imageID, imageBody, (result) => {
+    console.log(result);
+    res.status(200);
+  })
 });
 
 //COMPLETE
-router.patch("/products/:id", async (req, res, next) => {
+router.patch("/products/:id", (req, res, next) => {
   //MarkSold
   //Mark product as sold
   const productID = req.params.id;

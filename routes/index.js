@@ -138,31 +138,31 @@ router.put("/images/:image_id", (req, res, next) => {
   //UploadImage
   //Upload image with id
   const imageID = req.params.image_id;
-  const imageBody = req.body;
-  dbWorker.upLoadImage(imageID, imageBody, (result) => {
+  const {image} = req.body;
+  dbWorker.upLoadImage(imageID, image, (result) => {
     console.log(result);
-    res.status(200);
+    res.status(200).send();
   })
 });
 
 //COMPLETE
-router.patch("/products/:id", (req, res, next) => {
+router.patch("/product/:id", (req, res, next) => {
   //MarkSold
   //Mark product as sold
   const productID = req.params.id;
-  dbWorker.getSavedProducts(productID, (result) => {
+  dbWorker.MarkSold(productID, (result) => {
     console.log(result);
-    res.status(200);
+    res.status(200).send();
   });
 });
 
-router.get("/images/:image_id", async (req, res, next) => {
+router.get("/images/:image_id", (req, res, next) => {
   //GetImageByID
   //Returns image by id
   const imageID = req.params.image_id;
-  dbWorker.getUserByID(productID, (image) => {
-    //console.log(image);
-    res.status(200).send(image);
+  dbWorker.getImageByID(imageID, (image) => {
+    console.log(image);
+    res.status(200).send({"image":image["content"].toString("utf-8")});
   });
 });
 

@@ -103,14 +103,8 @@ dbWorker.getImageByID = (image_id, callback) => {
     console.log(image_id);
     conn.query(sql, [image_id], function (err, blob) {
         if (err) throw err;
-        callback(blob);
+        callback(blob[0]);
     });
-    var reader = new FileReader();
-    reader.readAsDataURL(blob); 
-    reader.onloadend = function() {
-        var base64data = reader.result;                
-        console.log(base64data);
-    }
 }
 
 // postProduct: create one product and five empty images

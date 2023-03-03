@@ -13,19 +13,21 @@ const BACK_CLIENT_ID = "424300706933-2t99cdia48nhq4oq893jabv6ffc0u528.apps.googl
 const client = new OAuth2Client(BACK_CLIENT_ID);
 
 function checkAuthenticated(req, res, next){
-  let token = req.params.token;
+  let token = req.headers.id_token;
   async function verify() {
     const ticket = await client.verifyIdToken({
         idToken: token,
-        audience: FRONT_CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
-        // Or, if multiple clients access the backend:
-        //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+        requiredAudience: FRONT_CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
     });
     const payload = ticket.getPayload();
     const userid = payload['sub'];
     console.log(payload);
-    // If request specified a G Suite domain:
-    // const domain = payload['hd'];
+
+    //Specify email domain
+    const domain = payload['hd'];
+    if(domain != "uci.edu"){
+      throw new Error("Unauthorized domain.");
+    }
   }
   verify()
   .then(()=> {
@@ -175,15 +177,6 @@ router.put("/images/:image_id", (req, res, next) => {
 router.patch("/product/:id", checkAuthenticated, (req, res, next) => {
   //MarkSold
   //Mark product as sold
-  /*
-  const token = req.params.token;
-  try {
-    verify(token);
-  } catch (err) {
-    console.error(err);
-    res.sendStatus(401);
-  }
-  */
   const productID = req.params.id;
   dbWorker.MarkSold(productID, (result) => {
     console.log(result);

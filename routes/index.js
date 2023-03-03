@@ -6,6 +6,32 @@ var router = express.Router();
 const { connectToDatabase } = require('../db');
 const dbWorker = require("../db");
 
+//google authorizarion
+const {OAuth2Client} = require('google-auth-library');
+const FRONT_CLIENT_ID = "424300706933-gt9in469m1k4hosob37vb7bef9jkmdhg.apps.googleusercontent.com";
+const BACK_CLIENT_ID = "424300706933-2t99cdia48nhq4oq893jabv6ffc0u528.apps.googleusercontent.com";
+const client = new OAuth2Client(BACK_CLIENT_ID);
+
+function checkAuthenticated(req, res, next){
+  let token = req.params.token;
+  async function verify() {
+    const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: FRONT_CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+        // Or, if multiple clients access the backend:
+        //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+    });
+    const payload = ticket.getPayload();
+    const userid = payload['sub'];
+    console.log(payload);
+    // If request specified a G Suite domain:
+    // const domain = payload['hd'];
+  }
+  verify()
+  .then(()=> {
+    next();
+  }).catch(console.error);
+}
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -146,9 +172,18 @@ router.put("/images/:image_id", (req, res, next) => {
 });
 
 //COMPLETE
-router.patch("/product/:id", (req, res, next) => {
+router.patch("/product/:id", checkAuthenticated, (req, res, next) => {
   //MarkSold
   //Mark product as sold
+  /*
+  const token = req.params.token;
+  try {
+    verify(token);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(401);
+  }
+  */
   const productID = req.params.id;
   dbWorker.MarkSold(productID, (result) => {
     console.log(result);

@@ -155,4 +155,13 @@ dbWorker.UpdateProfile = (email, first_name, last_name, bio, usr_id, callback) =
 }
 
 
+// MarkSaved: Mark a product as saved to an authorized user account with usr_id and product_id
+dbWorker.MarkSaved = (product_id, usr_id, callback) => {
+    sql = "INSERT INTO saved_products (product_id, usr_id) VALUES (?, ?)";
+    conn.query(sql, [product_id, usr_id], function (err, result) {
+      if (err) throw err;
+        callback(result);
+    });
+}
+
 module.exports = dbWorker;

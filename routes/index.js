@@ -205,4 +205,27 @@ router.get("/images/:image_id", (req, res, next) => {
   });
 });
 
+router.patch("/usr/:id", (req, res, next) => {
+  //UpdateProfile
+  //update user's profile by usr_id
+  const userID = req.params.id;
+  const {email, first_name, last_name, bio} = req.body;
+  dbWorker.UpdateProfile(email, first_name, last_name, bio, userID, (result) => {
+    console.log(result);
+    res.status(200).send();
+  });
+});
+
+router.patch("/saved/:usr_id/:product_id", (req, res, next) => {
+  //MarkSaved
+  //Mark a product as saved to an authorized user account with usr_id and product_id
+  const userID = req.params.usr_id;
+  const productID = req.params.product_id;
+  dbWorker.MarkSaved(productID, userID, (result) => {
+    console.log(result);
+    res.status(200).send();
+  });
+});
+
+
 module.exports = router;

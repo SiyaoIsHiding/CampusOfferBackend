@@ -69,7 +69,18 @@ router.get("/product", (req, res,next ) => {
   const productID = req.query.id;
   dbWorker.getProductByID(productID, (product) => {
     console.log(product);
-    res.status(200).send(product);
+
+    let obj1 = product[0][0];
+    let image_info = product[1];
+    let images = [];
+    for(let i = 0; i < image_info.length; i++){
+      let id = image_info[i]["id"];
+      images.push(id);
+    };
+    let image_id_arr = {"_images" : images};
+
+    let result = Object.assign(obj1, image_id_arr)
+    res.status(200).send(result);
   });
     
 });

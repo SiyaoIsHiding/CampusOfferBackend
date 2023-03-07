@@ -1,6 +1,9 @@
 var mysql = require('mysql');
 var fs = require('fs')
 
+// require('dotenv').config()
+// console.log(process.env) // remove this after you've confirmed it is working
+
 var conn = mysql.createConnection({
     host:"janedatabase.mysql.database.azure.com", 
     user:"CampusOfferAdmin", 

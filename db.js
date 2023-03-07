@@ -107,9 +107,9 @@ dbWorker.getImageByID = (image_id, callback) => {
     });
 }
 
-// postProduct: create one product and five empty images
-// create image id and its product_id leave content as null in DB
-// Only the product uuid is passed from server
+// The product uuid and _image_num are passed 
+// postProduct: create one product and _image_num empty images
+// create image id and its product_id, leave content as null in DB
 dbWorker.postProduct = (_image_num, product_id, category_id, seller_id, description, title, price, callback) => {
     sql = "INSERT INTO products (id, category_id, seller_id, description, is_sold, title, created_date, price) " + 
            "VALUES(?,?,?,?,default,?,default,?); "
@@ -143,5 +143,16 @@ dbWorker.MarkSold = (product_id, callback) => {
         callback(result);
     });
 }
+
+
+// UpdateProfile: update user's profile by usr_id
+dbWorker.UpdateProfile = (email, first_name, last_name, bio, usr_id, callback) => {
+    sql = "UPDATE usr SET email = ?, first_name = ?, last_name = ?, bio = ? WHERE id = ? ";
+    conn.query(sql, [email, first_name, last_name, bio, usr_id], function (err, result) {
+      if (err) throw err;
+        callback(result);
+    });
+}
+
 
 module.exports = dbWorker;

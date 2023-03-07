@@ -17,11 +17,11 @@ let dbWorker = {};
 
 // get product by ID
 dbWorker.getProductByID = (productID, callback) => {
-    sql = "SELECT * FROM products WHERE id = ?";
+    sql = "SELECT * FROM products WHERE id = ?; SELECT id FROM images WHERE product_id = ?";
     console.log(productID);
-    conn.query(sql, [productID], function (err, result) {
+    conn.query(sql, [productID, productID], function (err, result) {
         if (err) throw err;
-        callback(result[0]);
+        callback(result);
     });
 }
 

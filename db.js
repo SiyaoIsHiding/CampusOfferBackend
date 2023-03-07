@@ -150,7 +150,7 @@ dbWorker.MarkSold = (product_id, callback) => {
 
 // UpdateProfile: update user's profile by usr_id
 dbWorker.UpdateProfile = (email, first_name, last_name, bio, usr_id, callback) => {
-    sql = "UPDATE usr SET email = ?, first_name = ?, last_name = ?, bio = ? WHERE id = ? ";
+    sql = "UPDATE uci_usr SET email = ?, first_name = ?, last_name = ?, bio = ? WHERE id = ? ";
     conn.query(sql, [email, first_name, last_name, bio, usr_id], function (err, result) {
       if (err) throw err;
         callback(result);

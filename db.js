@@ -75,7 +75,7 @@ dbWorker.getProductUnderCategory = (categoryID, callback) => {
             "SELECT pc.id FROM product_category pc " +
             "JOIN (SELECT id FROM product_category WHERE parent_id = ?) t ON pc.parent_id = t.id)";
     console.log(categoryID);
-    conn.query(sql, [categoryID, categoryID], function (err, result) {
+    conn.query(sql, [categoryID, categoryID, categoryID], function (err, result) {
         if (err) throw err;
         callback(result);
     });

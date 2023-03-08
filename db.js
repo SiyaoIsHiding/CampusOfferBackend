@@ -1,15 +1,16 @@
 var mysql = require('mysql');
 var fs = require('fs')
 
-// require('dotenv').config()
-// console.log(process.env) // remove this after you've confirmed it is working
+require('dotenv').config()
+console.log(process.env) // remove this after you've confirmed it is working
 
 var conn = mysql.createConnection({
-    host:"janedatabase.mysql.database.azure.com", 
-    user:"CampusOfferAdmin", 
-    password:"DannyJaneSoniaStella2023", 
-    database:"JANEDB", 
-    port:3306, ssl:{ca:fs.readFileSync("DigiCertGlobalRootCA.crt.pem")},
+    host: process.env.DB_HOST, 
+    user: process.env.DB_USER, 
+    password: process.env.DB_PASSWORD, 
+    database: process.env.DB_DATABASE, 
+    port:process.env.DB_PORT, 
+    ssl:{ca:fs.readFileSync(process.env.DB_SSL_CA_PATH)},
     multipleStatements: true  // allow multiple sql queries, it's false by default for security
 }
     // {multipleStatements: true} // this is the wrong format to config

@@ -68,11 +68,12 @@ dbWorker.getSubCategory = (parentID, callback) => {
 // get products under a category ID as deep as its two layer sub-categories
 dbWorker.getProductUnderCategory = (categoryID, callback) => {
     sql = "SELECT id FROM products WHERE category_id IN (" +
-            "SELECT id FROM product_category WHERE parent_id = ?" +
-            " UNION" +
-            " SELECT pc.id FROM product_category pc" +
-            " JOIN (SELECT id FROM product_category "+
-                    "WHERE parent_id = ?) t ON pc.parent_id = t.id)";
+            "SELECT id FROM product_category WHERE category_id = ? " +
+            "UNION " +
+            "SELECT id FROM product_category WHERE parent_id = ? " +
+            "UNION " +
+            "SELECT pc.id FROM product_category pc " +
+            "JOIN (SELECT id FROM product_category WHERE parent_id = ?) t ON pc.parent_id = t.id)";
     console.log(categoryID);
     conn.query(sql, [categoryID, categoryID], function (err, result) {
         if (err) throw err;

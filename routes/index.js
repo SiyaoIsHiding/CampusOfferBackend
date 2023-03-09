@@ -43,6 +43,37 @@ router.get('/', function(req, res, next) {
 /*
 *  endpoints
 */
+router.post("/session", (req, res, next) => {
+  //login
+  //login user and send to client user info
+  let token = req.body.token;
+  let userID;
+  async function verify() {
+    const ticket = await client.verifyIdToken({
+        idToken: token,
+        requiredAudience: FRONT_CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+    });
+    const payload = ticket.getPayload();
+    const googleuserID = payload['sub'];
+    console.log(payload);
+    userID = googleuserID;
+
+    //Specify email domain
+    const domain = payload['hd'];
+    if(domain != "uci.edu"){
+      throw new Error("Unauthorized domain.");
+    }
+  }
+  verify()
+  .then(()=> {
+    let db_userID = userID;
+    dbWorker.getUserByID(db_userID, (user) => {
+      res.send(user);
+    });
+  }).catch(console.error);
+  
+});
+
 //COMPLETE
 router.post("/products", (req, res, next) => {
   //PostProduct
@@ -93,17 +124,6 @@ router.get("/category", (req, res, next) => {
   dbWorker.getCategoryByID(categoryID, (category) => {
     console.log(category);
     res.status(200).send(category);
-  });
-});
-
-//COMPLETE
-router.get("/subcategory", (req, res, next) => {
-  //GetSubCategory
-  //Return all categories under given id
-  const subcategoryID = req.query.id;
-  dbWorker.getSubCategory(subcategoryID, (categories) => {
-    console.log(categories);
-    res.status(200).send({"subcategory":categories});
   });
 });
 
@@ -201,7 +221,13 @@ router.get("/images/:image_id", (req, res, next) => {
   const imageID = req.params.image_id;
   dbWorker.getImageByID(imageID, (image) => {
     console.log(image);
-    res.status(200).send({"image":image["content"].toString("utf-8")});
+    if(image === undefined) {
+      res.status(404).send("image id does not exist");
+    } else if(image.content === null) {
+      res.status(204).send("image is null");
+    } else {
+      res.status(200).send({"image":image["content"].toString("utf-8")});
+    }
   });
 });
 
